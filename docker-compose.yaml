@@ -1,0 +1,110 @@
+version: "3.9"
+# Использовать вместе с .env файлом, шаблон для которого есть в .env_template
+
+services:
+  web:
+    build:
+      dockerfile: ./Dockerfile
+    image: web-image
+    hostname: web
+    container_name: web
+    restart: always
+
+    env_file:
+      - .env
+    environment:
+      - PGSQL_HOST=postgres
+      - RABBITMQ_HOST=rabbit
+
+    command: > 
+      sh -c "python manage.py makemigrations && python manage.py migrate &&
+             gunicorn web.wsgi:application --bind 0.0.0.0:8080"
+    ports:
+      - "8000:8080"
+
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+      rabbit:
+        condition: service_healthy
+
+    networks:
+      - shared_network
+
+  postgres_db:
+    image: postgres
+    hostname: postgres
+    container_name: postgres
+    restart: always
+
+    env_file:
+      - .env
+    user: postgres
+
+    healthcheck:
+      test: pg_isready
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+    volumes:
+      - pet_sit_dbdata
+
+    networks:
+      - shared_network
+
+  rabbit:
+    image: rabbitmq:3-management
+    hostname: rabbit
+    container_name: rabbit
+    restart: always
+
+    env_file:
+      - .env
+
+    ports:
+      - "15682:15672" # для доступа к web-интерфейсу
+
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+    networks:
+      - shared_network
+
+  celery:
+    image: web-image
+    container_name: celery
+    restart: always
+
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_HOST=rabbit
+
+    command: >
+      sh -c "celery -A web worker --loglevel=info"
+
+    healthcheck:
+      test: "celery -A web inspect ping"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+    depends_on:
+      - web
+
+    networks:
+      - shared_network
+
+volumes:
+  pet_sit_dbdata:
+
+networks:
+  shared_network:
+    driver: bridge
