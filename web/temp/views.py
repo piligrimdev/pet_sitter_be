@@ -27,5 +27,5 @@ class HealthCheckEndpoint(GenericAPIView):
             result = {'message': f'Task result of adding 2 and 3 is {trask_result}'}
         except OperationalError as e:
             result = {'message': "Can't connect to celery or RabbitMQ. Check logs for info"}
-            return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(result, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(result)
