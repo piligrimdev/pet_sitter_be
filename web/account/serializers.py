@@ -15,7 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class UpdateUserSerializer(serializers.ModelSerializer):
     """
-    Сериализатор для обновления имени и/или email
+    Сериализатор для обновления имени и/или details
     """
     class Meta:
         model = User
