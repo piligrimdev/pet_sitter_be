@@ -5,18 +5,15 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для получения данных пользователя.
-    """
     class Meta:
         model = User
         fields = ['id', 'name', 'email', 'status', 'details']
 
 
 class UpdateUserSerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для обновления имени и/или details
-    """
+    name = serializers.CharField(max_length=100)
+    details = serializers.CharField(max_length=200)
+
     class Meta:
         model = User
         fields = ['name', 'details']

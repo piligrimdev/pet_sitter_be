@@ -7,24 +7,17 @@ from web.account.serializers import UserSerializer, UpdateUserSerializer
 
 
 class UserDetailsView(APIView):
-    """
-    Ендпоинт для получения и обновления данных
-    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request: Request):
-        """
-        Обработка GET-запроса для получения данных
-        """
+
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
-    def patсh(self, request: Request):
-        """
-        Обработка PATH-запроса для обновления данных пользователя имени и/или details
-        """
+    def patch(self, request: Request):
         serializer = UpdateUserSerializer(request.user, data=request.data, partial=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(update_fields=['name', 'details'])
             return Response(serializer.data)
+
         return Response(serializer.error_messages)
