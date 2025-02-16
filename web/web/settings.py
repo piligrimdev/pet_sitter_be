@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
     'django.contrib.postgres',  # postgres integration
     'rest_framework',
+    'registration',
 
     'celery',
     'temp.apps.TempConfig',

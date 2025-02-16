@@ -19,4 +19,8 @@ class User(models.Model):
     def check_password(self, raw_password):
         return check_password(raw_password,self.password)
 
+
+# Create your models here.
+
+
 # Create your models here.

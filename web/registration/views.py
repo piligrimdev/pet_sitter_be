@@ -1,9 +1,12 @@
 from django.shortcuts import render
+
+# Create your views here.
+from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
-from reg.models import User
-from reg.serializers import UserSerializer
+
+from registration.serializers import UserSerializer
 
 
 class RegisterUserView(APIView):
@@ -13,4 +16,3 @@ class RegisterUserView(APIView):
             serializer.save()
             return Response(serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
