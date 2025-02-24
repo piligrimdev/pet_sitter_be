@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', '')
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'SOME_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.getenv('DEBUG', True))
@@ -42,15 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
     'django.contrib.postgres',  # postgres integration
     'rest_framework',
-    'registration',
-
+    'rest_framework.authtoken',
     'celery',
-    'temp.apps.TempConfig',
-    'users',
-    'account',
+    'temp',
+    'users'
 ]
 
 MIDDLEWARE = [
@@ -152,3 +149,12 @@ CELERY_BROKER_URL = (f"{RABBITMQ['PROTOCOL']}://"
                      f"{RABBITMQ['USER']}:{RABBITMQ['PASSWORD']}"
                      f"@{RABBITMQ['HOST']}:{RABBITMQ['PORT']}")
 
+
+AUTH_USER_MODEL = 'users.User'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ]
+}
